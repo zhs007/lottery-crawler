@@ -17,6 +17,10 @@ class LotteryMgr{
     }
 
     async _fixPK10(lst) {
+        if (lst.length <= 0) {
+            return ;
+        }
+
         let conn = CrawlerMgr.singleton.getMysqlConn(this.mysqlid);
         let str0 = '';
         for (let ii = 0; ii < lst.length; ++ii) {
@@ -38,6 +42,10 @@ class LotteryMgr{
     }
 
     async savePK10(lst) {
+        if (lst.length <= 0) {
+            return ;
+        }
+
         await this._fixPK10(lst);
 
         let conn = CrawlerMgr.singleton.getMysqlConn(this.mysqlid);

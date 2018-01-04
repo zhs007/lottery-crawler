@@ -45,6 +45,8 @@ function analysisNode(crawler, element, lst) {
 
 // 分析数据
 async function func_analysis(crawler) {
+    let isok = false;
+
     if (crawler.options.pk10_mode == 'maxpage') {
         crawler.da.data('a.lastPage').each((index, element) => {
             if (index == 0) {
@@ -52,24 +54,8 @@ async function func_analysis(crawler) {
                 let uri = obj.attr('href');
                 let astr = uri.split('=');
                 crawler.options.pk10_maxpage = astr[1];
-                // log('info', uri);
-                // cheerio('tbody', element).each(async (fi, tele) => {
-                //     if (fi == 0) {
-                //         let lst = [];
-                //
-                //         cheerio('tr', element).each((ni, nele) => {
-                //             if (ni > 1) {
-                //                 analysisNode(crawler, nele, lst);
-                //             }
-                //
-                //             return true;
-                //         });
-                //
-                //         await LotteryMgr.singleton.savePK10(lst);
-                //     }
-                //
-                //     return true;
-                // });
+
+                isok = true;
             }
 
             return true;
@@ -90,7 +76,11 @@ async function func_analysis(crawler) {
                             return true;
                         });
 
-                        await LotteryMgr.singleton.savePK10(lst);
+                        if (lst.length > 0) {
+                            isok = true;
+
+                            await LotteryMgr.singleton.savePK10(lst);
+                        }
                     }
 
                     return true;
@@ -99,6 +89,12 @@ async function func_analysis(crawler) {
 
             return true;
         });
+    }
+
+    if (!isok) {
+        log('error', crawler.data);
+
+        return undefined;
     }
 
     return crawler;
