@@ -35,14 +35,14 @@ function analysisNode(crawler, element, lst) {
         return ;
     }
 
-    log('info', 'code ' + code);
-    log('info', 'pk10_lastcode ' + crawler.options.pk10_lastcode);
+    // log('info', 'code ' + code);
+    // log('info', 'pk10_lastcode ' + crawler.options.pk10_lastcode);
 
     if (crawler.options.pk10_lastcode > 0 && code <= crawler.options.pk10_lastcode) {
         return ;
     }
 
-    log('info', 'opentime ' + opentime);
+    // log('info', 'opentime ' + opentime);
 
     let curnode = {
         code: code,
