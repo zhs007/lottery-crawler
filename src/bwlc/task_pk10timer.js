@@ -1,6 +1,7 @@
 "use strict";
 
 const moment = require('moment');
+const request = require('request');
 const { Task, crawlercore, log } = require('jarvis-task');
 const { CrawlerMgr } = crawlercore;
 const { taskFactory } = require('../taskfactory');
@@ -8,12 +9,12 @@ const { TASK_NAMEID_PK10TIMER } = require('../taskdef');
 const { LotteryMgr } = require('../lotterymgr');
 const { addCurPK10Crawler } = require('./pk10');
 
-function procCrawler(curpage, lastcode, lasthm) {
+function procCrawler(curpage, lastcode, lasthm, noticeuri) {
     addCurPK10Crawler(curpage, lastcode, (crawler) => {
         let lst = crawler.options.lstpk10;
         if (lst.length > 0) {
             if (lst[lst.length - 1].code > lastcode + 1) {
-                procCrawler(curpage + 1, lastcode, lasthm);
+                procCrawler(curpage + 1, lastcode, lasthm, noticeuri);
             }
 
             if (curpage == 1) {
@@ -26,14 +27,25 @@ function procCrawler(curpage, lastcode, lasthm) {
                     // 这里不能settimeout，后面会被关掉的
                     // 暂时在crawlermgr层做延时吧
                     // setTimeout(() => {
-                        procCrawler(1, lst[0].code, lasthm);
+                        procCrawler(1, lst[0].code, lasthm, noticeuri);
                     // }, 1000);
+                }
+                else {
+                    // 获取到需要的数据，回调
+                    request(noticeuri + lst[0].code, function (error, response, body) {
+                        if (error) {
+                            log('error', error);
+                        }
+
+                        log('info', 'statusCode:', response && response.statusCode);
+                        log('info', 'body:', body);
+                    });
                 }
             }
         }
         else {
             if (curpage == 1) {
-                procCrawler(1, lastcode, lasthm);
+                procCrawler(1, lastcode, lasthm, noticeuri);
             }
         }
     });
@@ -86,7 +98,7 @@ class TaskPK10Timer extends Task {
                 return ;
             }
 
-            procCrawler(1, curpk10.code, hm);
+            procCrawler(1, curpk10.code, hm, this.cfg.noticeuri);
 
             CrawlerMgr.singleton.start(true, false, async () => {
                 this.onEnd();
