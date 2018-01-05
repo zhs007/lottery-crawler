@@ -3,7 +3,8 @@
 const util = require('util');
 const fs = require('fs');
 const moment = require('moment');
-const { CrawlerMgr } = require('crawlercore');
+const { Task, crawlercore, log } = require('jarvis-task');
+const { CrawlerMgr } = crawlercore;
 
 const SQL_BATCH_NUMS = 4096;
 
@@ -36,9 +37,24 @@ class LotteryMgr{
             await conn.query(str);
         }
         catch(err) {
-            console.log('mysql err: ' + err);
-            console.log('mysql sql: ' + str);
+            log('error', 'mysql err: ' + err + ' sql: ' + str);
         }
+    }
+
+    async getCurPK10() {
+        let conn = CrawlerMgr.singleton.getMysqlConn(this.mysqlid);
+        let sql = 'select code, opentime from pk10 order by code desc limit 0, 1;';
+        try{
+            let [rows, fields] = await conn.query(sql);
+            if (rows.length > 0) {
+                return {code: rows[0].code, opentime: rows[0].opentime};
+            }
+        }
+        catch(err) {
+            log('error', 'mysql err: ' + err + ' sql: ' + sql);
+        }
+
+        return undefined;
     }
 
     async savePK10(lst) {
@@ -84,7 +100,7 @@ class LotteryMgr{
                     await conn.query(fullsql);
                 }
                 catch(err) {
-                    console.log('mysql err: ' + fullsql);
+                    log('error', 'mysql err: ' + err + ' sql: ' + fullsql);
                 }
 
                 fullsql = '';
@@ -97,7 +113,7 @@ class LotteryMgr{
                 await conn.query(fullsql);
             }
             catch(err) {
-                console.log('mysql err: ' + fullsql);
+                log('error', 'mysql err: ' + err + ' sql: ' + fullsql);
             }
         }
 

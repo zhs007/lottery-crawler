@@ -1,3 +1,4 @@
 "use strict";
 
-require('./bwlc/task_initpk10');
+require('./bwlc/task_pk10init');
+require('./bwlc/task_pk10timer');

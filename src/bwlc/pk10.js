@@ -8,7 +8,7 @@ let moment = require('moment');
 let util = require('util');
 
 function analysisNode(crawler, element, lst) {
-    let code, opentime;
+    let code = 0, opentime;
     let lstret = [];
 
     cheerio('td', element).each((ni, nele) => {
@@ -30,6 +30,19 @@ function analysisNode(crawler, element, lst) {
 
         return true;
     });
+
+    if (code == 0) {
+        return ;
+    }
+
+    log('info', 'code ' + code);
+    log('info', 'pk10_lastcode ' + crawler.options.pk10_lastcode);
+
+    if (crawler.options.pk10_lastcode > 0 && code <= crawler.options.pk10_lastcode) {
+        return ;
+    }
+
+    log('info', 'opentime ' + opentime);
 
     let curnode = {
         code: code,
@@ -69,14 +82,16 @@ async function func_analysis(crawler) {
                         let lst = [];
 
                         cheerio('tr', element).each((ni, nele) => {
-                            if (ni > 1) {
+                            // if (ni > 1) {
                                 analysisNode(crawler, nele, lst);
-                            }
+                            // }
 
                             return true;
                         });
 
                         if (lst.length > 0) {
+                            crawler.options.lstpk10 = lst;
+
                             isok = true;
 
                             await LotteryMgr.singleton.savePK10(lst);
@@ -91,7 +106,7 @@ async function func_analysis(crawler) {
         });
     }
 
-    if (!isok) {
+    if (!isok && crawler.options.pk10_lastcode <= 0) {
         log('error', crawler.data);
 
         return undefined;
@@ -115,23 +130,32 @@ let pk10Options = {
     func_analysis: func_analysis,
     func_onfinish: undefined,
 
-    pk10_maxpage: 15070
+    pk10_maxpage: 15070,
+    pk10_lastcode: -1,
+
+    lstpk10: []
 };
 
-function addPK10Crawler(page, pk10mode, callback) {
+function addPK10Crawler(page, pk10mode, lastcode, callback) {
     let op = Object.assign({}, pk10Options);
 
     op.uri = util.format("http://bwlc.net/bulletin/trax.html?page=%d", page);
     op.func_onfinish = callback;
     op.pk10_mode = pk10mode;
+    op.pk10_lastcode = lastcode;
 
     CrawlerMgr.singleton.addCrawler(op);
 }
 
 function addPK10MaxPageCrawler(callback) {
-    addPK10Crawler(1, 'maxpage', callback);
+    addPK10Crawler(1, 'maxpage', -1, callback);
+}
+
+function addCurPK10Crawler(page, lastcode, callback) {
+    addPK10Crawler(page, 'curpk10', lastcode, callback);
 }
 
 exports.pk10Options = pk10Options;
 exports.addPK10Crawler = addPK10Crawler;
 exports.addPK10MaxPageCrawler = addPK10MaxPageCrawler;
+exports.addCurPK10Crawler = addCurPK10Crawler;

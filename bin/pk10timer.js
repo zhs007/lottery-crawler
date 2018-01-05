@@ -8,10 +8,10 @@ const { startTask, initDailyRotateFileLog, log } = require('jarvis-task');
 const { taskFactory } = require('../src/taskfactory');
 require('../src/alltask');
 
-initDailyRotateFileLog(util.format('./log/initpk10_%d.log', moment().format('x')), 'info');
+initDailyRotateFileLog(util.format('./log/pk10timer_%d.log', moment().format('x')), 'info');
 // log('info', 'haha');
 
-const cfg = JSON.parse(fs.readFileSync('./initpk10.json').toString());
+const cfg = JSON.parse(fs.readFileSync('./pk10timer.json').toString());
 
 startTask(cfg, taskFactory, () => {
     process.exit(0);

@@ -1,0 +1,16 @@
+{
+    "name": "taskdeamon",
+    "tick": 1000,
+    "lsttask": [
+        {
+            "jarvis_shell": {
+                "filename": "./shell_pk10timer.js"
+            },
+            "tasknameid": "jarvis_shell",
+            "tasktype": "dayclocktimer",
+            "startclock": "09:07:00",
+            "endclock": "23:59:00",
+            "timer": 300000
+        }
+    ]
+}
