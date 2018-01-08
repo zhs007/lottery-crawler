@@ -18,12 +18,15 @@ function procCrawler(curpage, lastcode, lasthm, noticeuri) {
             }
 
             if (curpage == 1) {
-                let hm = parseInt(moment(lst[0].opentime, 'YYYY-MM-DD HH:mm').format('HHmm'));
+                let ot = moment(lst[0].opentime, 'YYYY-MM-DD HH:mm');
+                let hm = parseInt(ot.format('HHmm'));
+                let od = ot.format('YYYYMMDD');
+                let cd = moment().format('YYYYMMDD');
 
                 log('info', 'lasthm ' + lasthm);
                 log('info', 'hm ' + hm);
 
-                if (hm < lasthm) {
+                if (hm < lasthm && od == cd) {
                     // 这里不能settimeout，后面会被关掉的
                     // 暂时在crawlermgr层做延时吧
                     // setTimeout(() => {
@@ -67,11 +70,15 @@ class TaskPK10Timer extends Task {
                 return ;
             }
 
-            let curhm = parseInt(moment(curpk10.opentime, 'YYYY-MM-DD HH:mm').format('HHmm'));
+            let ot = moment(curpk10.opentime, 'YYYY-MM-DD HH:mm');
+            let od = ot.format('YYYYMMDD');
+            let cd = moment().format('YYYYMMDD');
+
+            let curhm = parseInt(ot.format('HHmm'));
 
             let th = parseInt(moment().format('HH'));
             let tm = parseInt(moment().format('mm'));
-            if (th < 9) {
+            if (th < 9 && od == cd) {
                 this.onEnd();
 
                 return ;
@@ -92,7 +99,7 @@ class TaskPK10Timer extends Task {
             log('info', JSON.stringify(curpk10));
             log('info', 'hm ' + hm);
 
-            if (hm <= curhm) {
+            if (hm <= curhm && od == cd) {
                 this.onEnd();
 
                 return ;
