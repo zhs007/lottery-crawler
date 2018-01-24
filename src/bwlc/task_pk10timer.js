@@ -50,7 +50,22 @@ function procCrawler(curpage, lastcode, lasthm, noticeuri) {
         }
         else {
             if (curpage == 1) {
-                procCrawler(1, lastcode, lasthm, noticeuri);
+                LotteryMgr.singleton.getCurPK10().then((curinfo) => {
+                    let ot = moment(curinfo.opentime);
+                    let hm = parseInt(ot.format('HHmm'));
+                    let od = ot.format('YYYYMMDD');
+                    let cd = moment().format('YYYYMMDD');
+
+                    if (hm < lasthm && od == cd) {
+                        // 这里不能settimeout，后面会被关掉的
+                        // 暂时在crawlermgr层做延时吧
+                        // setTimeout(() => {
+                        procCrawler(1, lastcode, lasthm, noticeuri);
+                        // }, 1000);
+                    }
+
+                    // procCrawler(1, lastcode, lasthm, noticeuri);
+                });
             }
         }
     });
