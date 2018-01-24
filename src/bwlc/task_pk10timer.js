@@ -34,6 +34,8 @@ function procCrawler(curpage, lastcode, lasthm, noticeuri) {
                     // }, 1000);
                 }
                 else {
+                    log('info', noticeuri + lst[0].code);
+
                     // 获取到需要的数据，回调
                     request(noticeuri + lst[0].code, function (error, response, body) {
                         if (error) {

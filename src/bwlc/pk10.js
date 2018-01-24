@@ -90,11 +90,13 @@ async function func_analysis(crawler) {
                         });
 
                         if (lst.length > 0) {
-                            crawler.options.lstpk10 = lst;
+                            // crawler.options.lstpk10 = lst;
 
                             isok = true;
 
-                            await LotteryMgr.singleton.savePK10(lst);
+                            crawler.options.lstpk10 = await LotteryMgr.singleton.savePK10Ex(lst);
+
+                            log('info', JSON.stringify(crawler.options.lstpk10));
                         }
                     }
 
