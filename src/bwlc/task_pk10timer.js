@@ -58,12 +58,28 @@ function procCrawler(curpage, lastcode, lasthm, noticeuri) {
                     let od = ot.format('YYYYMMDD');
                     let cd = moment().format('YYYYMMDD');
 
+                    log('info', 'lasthm ' + lasthm);
+                    log('info', 'hm ' + hm);
+
                     if (hm < lasthm && od == cd) {
                         // 这里不能settimeout，后面会被关掉的
                         // 暂时在crawlermgr层做延时吧
                         // setTimeout(() => {
                         procCrawler(1, lastcode, lasthm, noticeuri);
                         // }, 1000);
+                    }
+                    else {
+                        log('info', noticeuri + curinfo.code);
+
+                        // 获取到需要的数据，回调
+                        request(noticeuri + curinfo.code, function (error, response, body) {
+                            if (error) {
+                                log('error', error);
+                            }
+
+                            log('info', 'statusCode:', response && response.statusCode);
+                            log('info', 'body:', body);
+                        });
                     }
 
                     // procCrawler(1, lastcode, lasthm, noticeuri);
