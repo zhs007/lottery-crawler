@@ -11,6 +11,8 @@ const { addCurPK10Crawler } = require('./pk10');
 
 function procCrawler(curpage, lastcode, lasthm, noticeuri) {
     addCurPK10Crawler(curpage, lastcode, (crawler) => {
+        log('info', 'onfinished: ' + JSON.stringify(crawler.options.lstpk10));
+
         let lst = crawler.options.lstpk10;
         if (lst.length > 0) {
             if (lst[lst.length - 1].code > lastcode + 1) {
