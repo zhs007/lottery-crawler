@@ -51,7 +51,7 @@ function procCrawler(curpage, lastcode, lasthm, noticeuri) {
             }
         }
         else {
-            if (curpage == 1) {
+            // if (curpage == 1) {
                 LotteryMgr.singleton.getCurPK10().then((curinfo) => {
                     let ot = moment(curinfo.opentime);
                     let hm = parseInt(ot.format('HHmm'));
@@ -84,7 +84,7 @@ function procCrawler(curpage, lastcode, lasthm, noticeuri) {
 
                     // procCrawler(1, lastcode, lasthm, noticeuri);
                 });
-            }
+            // }
         }
     });
 }
