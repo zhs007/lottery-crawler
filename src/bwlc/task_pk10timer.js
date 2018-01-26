@@ -35,6 +35,9 @@ function procCrawler(curpage, lastcode, lasthm, noticeuri) {
                         procCrawler(1, lst[0].code, lasthm, noticeuri);
                     // }, 1000);
                 }
+                else if (hm == 907 && cd != od) {
+                    procCrawler(1, lst[0].code, lasthm, noticeuri);
+                }
                 else {
                     log('info', noticeuri + lst[0].code);
 
@@ -65,8 +68,11 @@ function procCrawler(curpage, lastcode, lasthm, noticeuri) {
                         // 这里不能settimeout，后面会被关掉的
                         // 暂时在crawlermgr层做延时吧
                         // setTimeout(() => {
-                        procCrawler(1, lastcode, lasthm, noticeuri);
+                        procCrawler(1, curinfo.code, lasthm, noticeuri);
                         // }, 1000);
+                    }
+                    else if (hm == 907 && cd != od) {
+                        procCrawler(1, curinfo.code, lasthm, noticeuri);
                     }
                     else {
                         log('info', noticeuri + curinfo.code);
