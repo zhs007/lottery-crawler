@@ -63,6 +63,8 @@ function procCrawler(curpage, lastcode, lasthm, noticeuri) {
 
                     log('info', 'lasthm ' + lasthm);
                     log('info', 'hm ' + hm);
+                    log('info', 'od ' + od);
+                    log('info', 'cd ' + cd);
 
                     if (hm < lasthm && od == cd) {
                         // 这里不能settimeout，后面会被关掉的
