@@ -35,8 +35,8 @@ function analysisNode(crawler, element, lst) {
         return ;
     }
 
-    log('info', 'code ' + code);
-    log('info', 'pk10_lastcode ' + crawler.options.pk10_lastcode);
+    // log('info', 'code ' + code);
+    // log('info', 'pk10_lastcode ' + crawler.options.pk10_lastcode);
 
     if (crawler.options.pk10_lastcode > 0 && code <= crawler.options.pk10_lastcode) {
         return ;
@@ -56,8 +56,7 @@ function analysisNode(crawler, element, lst) {
     lst.push(curnode);
 }
 
-// 分析数据
-async function func_analysis(crawler) {
+function _func_analysis(crawler, callback) {
     let isok = false;
 
     if (crawler.options.pk10_mode == 'maxpage') {
@@ -73,6 +72,12 @@ async function func_analysis(crawler) {
 
             return true;
         });
+
+        if (isok) {
+            callback(crawler);
+
+            return ;
+        }
     }
     else {
         crawler.da.data('table.tb').each((index, element) => {
@@ -83,7 +88,7 @@ async function func_analysis(crawler) {
 
                         cheerio('tr', element).each((ni, nele) => {
                             // if (ni > 1) {
-                                analysisNode(crawler, nele, lst);
+                            analysisNode(crawler, nele, lst);
                             // }
 
                             return true;
@@ -94,9 +99,21 @@ async function func_analysis(crawler) {
 
                             isok = true;
 
-                            crawler.options.lstpk10 = await LotteryMgr.singleton.savePK10Ex(lst);
+                            LotteryMgr.singleton.savePK10Ex(lst).then((nlst) => {
+                                crawler.options.lstpk10 = nlst;
 
-                            log('info', JSON.stringify(crawler.options.lstpk10));
+                                log('info', JSON.stringify(crawler.options.lstpk10));
+
+                                callback(crawler);
+                            });
+                            // crawler.options.lstpk10 = await LotteryMgr.singleton.savePK10Ex(lst);
+
+                            // log('info', JSON.stringify(crawler.options.lstpk10));
+                        }
+                        else {
+                            callback(crawler);
+
+                            return ;
                         }
                     }
 
@@ -111,11 +128,82 @@ async function func_analysis(crawler) {
     if (!isok && crawler.options.pk10_lastcode <= 0) {
         log('error', crawler.data);
 
-        return undefined;
+        callback(undefined);
     }
-
-    return crawler;
 }
+
+// 分析数据
+async function func_analysis(crawler) {
+    return new Promise((resolve, reject) => {
+        _func_analysis(crawler, (crawler1) => {
+            resolve(crawler1);
+            // if (crawler1 == undefined) {
+            //     reject();
+            // }
+        });
+    });
+}
+
+// // 分析数据
+// async function func_analysis(crawler) {
+//     let isok = false;
+//
+//     if (crawler.options.pk10_mode == 'maxpage') {
+//         crawler.da.data('a.lastPage').each((index, element) => {
+//             if (index == 0) {
+//                 let obj = cheerio(element);
+//                 let uri = obj.attr('href');
+//                 let astr = uri.split('=');
+//                 crawler.options.pk10_maxpage = astr[1];
+//
+//                 isok = true;
+//             }
+//
+//             return true;
+//         });
+//     }
+//     else {
+//         crawler.da.data('table.tb').each((index, element) => {
+//             if (index == 0) {
+//                 cheerio('tbody', element).each(async (fi, tele) => {
+//                     if (fi == 0) {
+//                         let lst = [];
+//
+//                         cheerio('tr', element).each((ni, nele) => {
+//                             // if (ni > 1) {
+//                                 analysisNode(crawler, nele, lst);
+//                             // }
+//
+//                             return true;
+//                         });
+//
+//                         if (lst.length > 0) {
+//                             // crawler.options.lstpk10 = lst;
+//
+//                             isok = true;
+//
+//                             crawler.options.lstpk10 = await LotteryMgr.singleton.savePK10Ex(lst);
+//
+//                             log('info', JSON.stringify(crawler.options.lstpk10));
+//                         }
+//                     }
+//
+//                     return true;
+//                 });
+//             }
+//
+//             return true;
+//         });
+//     }
+//
+//     if (!isok && crawler.options.pk10_lastcode <= 0) {
+//         log('error', crawler.data);
+//
+//         return undefined;
+//     }
+//
+//     return crawler;
+// }
 
 let pk10Options = {
     // 主地址

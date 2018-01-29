@@ -81,6 +81,13 @@ class LotteryMgr{
                     olst.push(rows[ii].code);
                 }
 
+                // let nlst = [];
+                // for (let ii = 0; ii < lst.length; ++ii) {
+                //     if (olst.indexOf(lst[ii].code) < 0) {
+                //         nlst.push();
+                //     }
+                // }
+
                 return olst;
             }
         }

@@ -84,7 +84,7 @@ function procCrawler(curpage, lastcode, lasthm, noticeuri) {
                         log('info', noticeuri + curinfo.code);
 
                         // 获取到需要的数据，回调
-                        let str = await rp(noticeuri + lst[0].code).catch((err) => {
+                        let str = await rp(noticeuri + curinfo.code).catch((err) => {
                             log('error', err);
 
                         });//, function (error, response, body) {
