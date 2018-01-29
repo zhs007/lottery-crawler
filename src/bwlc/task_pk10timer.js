@@ -84,14 +84,17 @@ function procCrawler(curpage, lastcode, lasthm, noticeuri) {
                         log('info', noticeuri + curinfo.code);
 
                         // 获取到需要的数据，回调
-                        request(noticeuri + curinfo.code, function (error, response, body) {
-                            if (error) {
-                                log('error', error);
-                            }
+                        let str = await rp(noticeuri + lst[0].code).catch((err) => {
+                            log('error', err);
 
-                            log('info', 'statusCode:', response && response.statusCode);
-                            log('info', 'body:', body);
-                        });
+                        });//, function (error, response, body) {
+                        // if (error) {
+                        //     log('error', error);
+                        // }
+
+                        // log('info', 'statusCode:', response && response.statusCode);
+                        log('info', 'body:', str);
+                        // });
                     }
 
                     // procCrawler(1, lastcode, lasthm, noticeuri);
