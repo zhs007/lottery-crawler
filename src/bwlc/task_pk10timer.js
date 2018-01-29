@@ -1,7 +1,7 @@
 "use strict";
 
 const moment = require('moment');
-const request = require('request');
+const rp = require('request-promise');
 const { Task, crawlercore, log } = require('jarvis-task');
 const { CrawlerMgr } = crawlercore;
 const { taskFactory } = require('../taskfactory');
@@ -10,7 +10,7 @@ const { LotteryMgr } = require('../lotterymgr');
 const { addCurPK10Crawler } = require('./pk10');
 
 function procCrawler(curpage, lastcode, lasthm, noticeuri) {
-    addCurPK10Crawler(curpage, lastcode, (crawler) => {
+    addCurPK10Crawler(curpage, lastcode, async (crawler) => {
         log('info', 'onfinished: ' + JSON.stringify(crawler.options.lstpk10));
 
         let lst = crawler.options.lstpk10;
@@ -42,20 +42,24 @@ function procCrawler(curpage, lastcode, lasthm, noticeuri) {
                     log('info', noticeuri + lst[0].code);
 
                     // 获取到需要的数据，回调
-                    request(noticeuri + lst[0].code, function (error, response, body) {
-                        if (error) {
-                            log('error', error);
-                        }
+                    let str = await rp(noticeuri + lst[0].code).catch((err) => {
+                        log('error', err);
 
-                        log('info', 'statusCode:', response && response.statusCode);
-                        log('info', 'body:', body);
-                    });
+                    });//, function (error, response, body) {
+                        // if (error) {
+                        //     log('error', error);
+                        // }
+
+                        // log('info', 'statusCode:', response && response.statusCode);
+                        log('info', 'body:', str);
+                    // });
                 }
             }
         }
         else {
             // if (curpage == 1) {
-                LotteryMgr.singleton.getCurPK10().then((curinfo) => {
+            let curinfo = await LotteryMgr.singleton.getCurPK10();
+                // LotteryMgr.singleton.getCurPK10().then((curinfo) => {
                     let ot = moment(curinfo.opentime);
                     let hm = parseInt(ot.format('HHmm'));
                     let od = ot.format('YYYYMMDD');
@@ -91,7 +95,7 @@ function procCrawler(curpage, lastcode, lasthm, noticeuri) {
                     }
 
                     // procCrawler(1, lastcode, lasthm, noticeuri);
-                });
+                // });
             // }
         }
     });
