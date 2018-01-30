@@ -77,7 +77,7 @@ function procCrawler(curpage, lastcode, lasthm, noticeuri) {
                         procCrawler(1, curinfo.code, lasthm, noticeuri);
                         // }, 1000);
                     }
-                    else if (hm == 907 && cd != od) {
+                    else if (lasthm == 907 && cd != od) {
                         procCrawler(1, curinfo.code, lasthm, noticeuri);
                     }
                     else {
